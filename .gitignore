@@ -1,0 +1,9 @@
+# Material interno — não publicar
+*.pdf
+_build/precos.local.js
+
+# Sistema
+Thumbs.db
+desktop.ini
+.DS_Store
+node_modules/
