@@ -40,7 +40,7 @@ O site está publicado pelo **GitHub Pages**: cada `git push` na branch `main` a
 Para outra hospedagem, suba a pasta inteira (sem `_build/` e sem o PDF, se preferir) para qualquer hospedagem estática. As URLs dos modelos são as mesmas do WordPress atual, então os links já indexados no Google continuam funcionando.
 
 ## Pontos para confirmar
-- **Telefone:** o site usa (51) 2160-5378; o catálogo usa (51) 2221-0308. Mantive o do site.
+- **Telefone/WhatsApp:** o site usa um único número, (48) 99910-2369, para ligação e WhatsApp (definido em `config` no `dados.js`).
 - **Rustic e Pisa:** estão no site, mas não no catálogo 2026. Coloquei Rustic na Linha Standard e Pisa na Plus. Os dois ficam sem preço.
 - **Eleganza:** está no catálogo, mas não tinha página no site. A descrição foi escrita para o site novo e precisa de revisão.
 - **Medidas:** usei as medidas padrão do site (1,80×1,00 / 2,00×1,20 / 2,30×1,30 / 2,70×1,45). O catálogo traz pequenas variações: Verona 1,80×1,10; Comodo e Novara 2,30×1,20; Milano 2,70×1,34; Iron e Sofisticatto 2,70×1,44. Bergamo e Eleganza não têm 2,70 no catálogo.

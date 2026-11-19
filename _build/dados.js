@@ -16,11 +16,11 @@ const config = {
   // true  = links limpos "/modelo-comodo/" (use ao publicar num servidor).
   urlsLimpas: false,
 
-  whatsapp: '5551991926993',
-  whatsappExibicao: '(51) 99192-6993',
+  whatsapp: '5548999102369',
+  whatsappExibicao: '(48) 99910-2369',
   whatsappMensagem: 'Olá! Vim do site e gostaria de mais informações sobre as mesas.',
-  telefone: '(51) 2160-5378',
-  telefoneLink: '+555121605378',
+  telefone: '(48) 99910-2369',
+  telefoneLink: '+5548999102369',
   endereco: 'Rua Vereador Antônio Ferreira Alves, 477',
   cidade: 'Canoas',
   uf: 'RS',
