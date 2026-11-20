@@ -1,50 +1,54 @@
-# Seletto Prime — site
+# Seletto Prime — site + painel de leads (Next.js)
 
-Site estático (HTML, CSS e JS puros, sem dependências) recriado a partir de selettoprime.com.br e do *Catálogo Seletto 2026*.
+Site institucional e catálogo da Seletto Prime, formulário de qualificação de leads e painel comercial.
 
-## Como ver
-Abra `index.html` no navegador. Funciona direto do computador, sem servidor.
+- **Site:** home, catálogo filtrável, uma página por mesa (`/modelo-comodo/` …, mesmas URLs do WordPress antigo), galeria, sobre, contato, política de privacidade.
+- **`/orcamento`:** formulário de qualificação (spec "Formulário de qualificação de leads v1.0"): 4 perfis, perguntas por caminho, CNPJ validado, classificação automática (Prioritário / Em avaliação / Nutrição) e tela final com WhatsApp pré-preenchido.
+- **`/painel`:** login, Leads (filtros, ficha, anotações, exportar CSV), Funil (arrastar entre etapas), Clientes e Relatórios (CPL, ROAS, ROI, ciclo de venda, formulário → WhatsApp). Aviso em tempo real de lead novo. Demonstração sem banco: `/painel/?demo=1`.
+
+## Rodar no computador
+```bash
+npm install
+cp .env.example .env.local   # preencha as chaves do Supabase
+npm run dev                  # http://localhost:3000
+```
+`npm run build` gera o site estático na pasta `out/`.
 
 ## Estrutura
 ```
-index.html              Home
-catalogo/               Catálogo com filtros (Standard / Plus / Master), busca, jogos e acessórios
-modelo-<nome>/          Uma página por mesa (mesmas URLs do WordPress atual: /modelo-comodo/ ...)
-galeria/  sobre/  contato/
-assets/css/style.css    Estilos
-assets/js/main.js       Interações
-assets/img/             Fotos otimizadas em WebP, logo vetorial, favicons, imagens de compartilhamento
-_build/dados.js         TODOS os textos, modelos, tamanhos, preços, cores e contatos
-_build/build.js         Gerador das páginas
-sitemap.xml  robots.txt
+src/app/(site)/       páginas do site (layout com cabeçalho e rodapé)
+src/app/painel/       painel de leads (login Supabase)
+src/components/       componentes do site; painel/ = telas do painel
+src/data/catalogo.json  modelos, textos, cores de feltro, jogos, acessórios
+src/data/site.ts      contatos, WhatsApp, endereço, configurações
+src/lib/leads.ts      perguntas do formulário, classificação, status, origem
+supabase/migrations/  SQL do banco
+public/img/           fotos (WebP), logo, favicons
 ```
 
-## Como editar
-1. Altere `_build/dados.js` (ou textos de página em `_build/build.js`).
-2. Rode `node _build/build.js` (precisa do Node.js instalado).
+## Configurar o banco (Supabase) — uma vez
+1. Crie um projeto em supabase.com (plano gratuito, região São Paulo).
+2. **SQL Editor** → rode `supabase/migrations/001_inicial.sql`.
+3. **Authentication → Providers → Email:** desative "Allow new users to sign up".
+4. **Authentication → Users → Add user:** crie o login da equipe.
+5. **Project Settings → API:** copie *Project URL* e a chave *anon public*.
+6. No GitHub: **Settings → Secrets and variables → Actions → Variables** → crie `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY` (opcional: `NEXT_PUBLIC_META_PIXEL_ID`). Depois rode o workflow de novo (aba Actions → "Publicar no GitHub Pages" → Run workflow).
 
-As páginas `.html` são geradas: alterações feitas direto nelas são sobrescritas na próxima geração.
-
-### Chaves importantes em `_build/dados.js`
-| Chave | Padrão | O que faz |
-|---|---|---|
-| `mostrarPrecos` | `false` | Exibe "a partir de" nos cards e o preço por tamanho. Está desligado porque o catálogo 2026 é marcado como *"Catálogo Interno — utilização exclusiva time de vendas"*. |
-
-### Preços
-Os preços ficam em `_build/precos.local.js`, que **não vai para o GitHub** (está no `.gitignore`, assim como o PDF do catálogo). Sem esse arquivo, o site é gerado normalmente, só que sem preços.
-| `urlsLimpas` | `false` | `false` = links com `index.html` (funciona abrindo do PC). Use `true` ao publicar no servidor para links como `/modelo-comodo/`. |
+A chave *anon* é pública por natureza: o banco só deixa o visitante **inserir** lead (não lê nem edita). Ler e editar exige login.
 
 ## Publicação
-O site está publicado pelo **GitHub Pages**: cada `git push` na branch `main` atualiza o site em alguns minutos. Gere as páginas (`node _build/build.js`) antes de enviar.
+- **Agora:** GitHub Pages, automático a cada `git push` na `main` (`.github/workflows/pages.yml`).
+- **Depois, Vercel:** importe o repositório na Vercel, cadastre as mesmas variáveis (sem `NEXT_PUBLIC_BASE_PATH`) e aponte o domínio. Na Vercel dá para remover `output: 'export'` do `next.config.mjs` e ganhar rotas de servidor.
 
-Para outra hospedagem, suba a pasta inteira (sem `_build/` e sem o PDF, se preferir) para qualquer hospedagem estática. As URLs dos modelos são as mesmas do WordPress atual, então os links já indexados no Google continuam funcionando.
+## Preços
+O catálogo 2026 é interno, então os preços **não ficam no código**. Para exibir: crie `precos.local.json` na raiz (fora do Git) e mude `mostrarPrecos` para `true` em `src/data/site.ts`. Só aparece em builds feitos onde esse arquivo existe.
+
+## Próxima fase — robô e campanhas de WhatsApp
+Depende da **API oficial do WhatsApp (Cloud API da Meta)**: app no Meta for Developers, número conectado, token permanente. A parte de servidor (receber mensagens, responder, disparar campanhas) vai em **Supabase Edge Functions**, então funciona igual no GitHub Pages e na Vercel.
 
 ## Pontos para confirmar
-- **Telefone/WhatsApp:** o site usa um único número, (48) 99910-2369, para ligação e WhatsApp (definido em `config` no `dados.js`).
-- **Rustic e Pisa:** estão no site, mas não no catálogo 2026. Coloquei Rustic na Linha Standard e Pisa na Plus. Os dois ficam sem preço.
-- **Eleganza:** está no catálogo, mas não tinha página no site. A descrição foi escrita para o site novo e precisa de revisão.
-- **Medidas:** usei as medidas padrão do site (1,80×1,00 / 2,00×1,20 / 2,30×1,30 / 2,70×1,45). O catálogo traz pequenas variações: Verona 1,80×1,10; Comodo e Novara 2,30×1,20; Milano 2,70×1,34; Iron e Sofisticatto 2,70×1,44. Bergamo e Eleganza não têm 2,70 no catálogo.
-- **Cores de feltro:** as 14 cores vêm da tabela oficial do site, mas os nomes (Areia, Lavanda, Azul-petróleo…) foram dados por mim.
-- **Simulador "Personalize":** os acabamentos (preto, branco, grafite, bege, madeiras) são ilustrativos.
-- **Outras opções de jogos:** interpretei "Mesa Zeus com versão em Carmello" como *Pebolim base Carmello*.
-- **"Espaço ideal" nas páginas dos modelos:** é a medida da mesa + 1,45 m de taco em cada lado (regra prática).
+- **CNPJ:** opcional, com "informo depois" (`CNPJ_OBRIGATORIO` em `src/lib/leads.ts`). O PDF deixa a decisão pendente.
+- **"Orçamento compatível" (Prioritário):** prazo de até 30 dias com faixa de investimento definida; condomínio e empresa: compra aprovada ou autorizada (`classificar()` em `src/lib/leads.ts`).
+- **Política de privacidade:** falta a razão social, o CNPJ e o e-mail do encarregado de dados.
+- **Endereço:** Canoas/RS com WhatsApp (48). Confirmar se o endereço mudou.
+- Rustic e Pisa estão fora do catálogo 2026. Eleganza tem descrição nova. Os nomes das cores de feltro foram dados por nós.

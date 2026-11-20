@@ -1,9 +1,20 @@
 # Material interno — não publicar
 *.pdf
-_build/precos.local.js
+precos.local.json
+
+# Segredos
+.env
+.env.local
+.env.*.local
+
+# Next.js
+node_modules/
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
 
 # Sistema
 Thumbs.db
 desktop.ini
 .DS_Store
-node_modules/
